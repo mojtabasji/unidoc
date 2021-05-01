@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "unidoc1.0.0",
-    "slug": "unidoc1.0.0",
+    "slug": "unidoc100",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -17,7 +17,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "iosBuilder"
     },
     "android": {
       "adaptiveIcon": {
