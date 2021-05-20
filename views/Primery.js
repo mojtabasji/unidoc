@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Image, TouchableOpacity, AsyncStorage } from 'react-native';
+import { StyleSheet, View, Image, TouchableOpacity, AsyncStorage, Alert } from 'react-native';
 import {
     Container, Header, Text, Body, Title, Left,
     Right, Button, Icon, Footer, Content, Fab, Card, Item, Input,
@@ -8,6 +8,8 @@ import Home from './Home.js';
 import Document from './Document.js';
 import Search from './Search.js';
 import Myfile from './Myfile.js';
+import Ads from './Ads';
+//import database from '@react-native-firebase/database';
 
 
 
@@ -17,8 +19,15 @@ class primary extends React.Component {
     }
 
 
-    componentDidMount(){
-    }
+    /*componentDidMount() {
+        database()
+            .ref('/user')
+            .set({
+                name: 'Ada Lovelace',
+                age: 31,
+            })
+            .then(() => console.log('Data set.'));
+    }*/
 
 
     /* 
@@ -37,10 +46,8 @@ class primary extends React.Component {
                         <Title style={style.namelogo}>𝓤𝓷𝓲𝓓𝓸𝓬</Title>
                     </Body>
                 </Header>
-                <Content>
-                    {this.showpage()}
-                </Content>
-
+                {this.showpage()}
+                {this.AdsPage()}
                 {this.fabBtn()}
                 <Footer >
                     <View style={style.footer}>
@@ -57,17 +64,41 @@ class primary extends React.Component {
         this.setState({ selectedPage: tmp });
     }
 
+    AdsPage = () => {
+        if (this.state.selectedPage == 4) {
+            return (
+                <Ads pageChanger={this.pageChanger}></Ads>
+            );
+        }
+    }
+
     showpage = () => {
         let selectedpageroot = this.state.selectedPage;
         if (selectedpageroot > 10) { selectedpageroot /= 10; selectedpageroot = parseInt(selectedpageroot); }
 
         switch (selectedpageroot) {
             case 1:
-                return (<Home Stater={this.props.Stater} pager={this.state.selectedPage} State={this.props.State} pageChanger={this.pageChanger}></Home>);
+                return (
+                    <Content>
+                        <Home Stater={this.props.Stater} pager={this.state.selectedPage} State={this.props.State} pageChanger={this.pageChanger}></Home>
+                    </Content>);
             case 2:
-                return (<Document pageChanger={this.pageChanger} pager={this.state.selectedPage}></Document>);
+                return (
+                    <Content>
+                        <Document pageChanger={this.pageChanger} pager={this.state.selectedPage}></Document>
+                    </Content>
+                );
             case 3:
-                return (<Search pageChanger={this.pageChanger} pager={this.state.selectedPage}></Search>);
+                return (
+                    <Content>
+                        <Search pageChanger={this.pageChanger} pager={this.state.selectedPage}></Search>
+                    </Content>
+                );
+
+            case 4:
+                {
+                    return;
+                }
             default:
                 return;
         }
@@ -95,6 +126,11 @@ class primary extends React.Component {
                             <Icon name="add" />
                         </View>
                     </Button>
+                    <Button onPress={() => { this.sqltesst() }} style={{ backgroundColor: '#DD5144' }}>
+                        <View>
+                            <Icon name="magnifier" />
+                        </View>
+                    </Button>
                     <Button onPress={() => { this.setState({ selectedPage: 14 }) }} style={{ backgroundColor: '#3B5998' }}>
                         <Icon name="settings" />
                     </Button>
@@ -105,6 +141,17 @@ class primary extends React.Component {
             );
         }
     }
+
+    sqltesst = () => {
+/*
+        database()
+            .ref('/user')
+            .once('value')
+            .then(snapshot => {
+                console.log('User data: ', snapshot.val());
+            });*/
+    }
+
 
     logOut = () => {
         this.props.Stater({ logedin: false, page: -1 });
@@ -180,9 +227,6 @@ class primary extends React.Component {
                             </Button>
                         </View>
                     );
-                }
-            case 4:
-                {
                 }
             default:
                 { return; }

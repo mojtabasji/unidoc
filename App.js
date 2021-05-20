@@ -5,6 +5,8 @@ import { Container, Header, Left, Body, Right, Button, Icon, Title } from 'nativ
 import Logiin from './views/Logiin';
 import Primary from './views/Primery';
 import Signup from './views/Signup';
+import * as SQLite from 'expo-sqlite';
+
 
 class App extends React.Component {
   state = {
@@ -78,8 +80,29 @@ class App extends React.Component {
         return;
     }
   }
-
+//LIMIT 1
   componentDidMount() {
+
+    const mydb = SQLite.openDatabase('unidoc');
+
+    mydb.transaction(
+      tx =>{
+        tx.executeSql("create table if not exists status (username, password, passwordHash, logstate);",[],(err)=>{console.log(err)},(val)=>{console.log(val)});
+        tx.executeSql("select * from status ",[],null,(_, { rows }) =>
+        {console.log(JSON.stringify(rows))
+        });   /*(val)=>{
+          if(val == null)
+          {
+            tx.executeSql("insert into status (username, password, passwordHash, logstate) VALUES ('username','password', 'passwordHash','out');");
+          }
+          else{
+            console.log(val);
+          }
+        },alert('here'));*/
+        
+      },
+      null,null
+    );
     this._retrieveData();
     this.mystatus();
   }
