@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { AsyncStorage, ImageBackground } from 'react-native';
+import { ImageBackground } from 'react-native';
 import {
     StyleSheet,
     View,
@@ -26,7 +26,7 @@ export default class LoginView extends Component {
 
         page: 'first',
         loding: false,
-        passwordHash:'',
+        passwordHash: '',
     }
 
     Stater = (value) => {
@@ -73,25 +73,12 @@ export default class LoginView extends Component {
         }
     }
 
-
-    storLogin = async () => {
-        try {
-            await AsyncStorage.setItem(
-                'status',
-                'logedIn'
-            );
-            await AsyncStorage.setItem(
-                'passwordHash',
-                this.state.passwordHash
-            );
-            await AsyncStorage.setItem(
-                'userName',
-                this.state.userName
-            );
-        } catch (error) {
-            // Error saving data
-        }
-    };
+    storLogin = () => {
+        database.setData({ status: 'logedIn', passwordhash: this.state.passwordHash, username: this.state.userName }).then(
+            (resp) => { console.log(resp); }).catch(
+            (err) => { console.log(err); }
+        );
+    }
 
 
     signUp = () => {
@@ -113,7 +100,7 @@ export default class LoginView extends Component {
                 console.log(res);
                 if (res.logedin == true) {
                     tis.setState({ passwordHash: res.passwordHash });
-                    tis.props.Stater({ logedin: true, page: 0, passwordHash: res.passwordHash, userName:tis.state.userName });
+                    tis.props.Stater({ logedin: true, page: 0, passwordHash: res.passwordHash, userName: tis.state.userName });
                     tis.storLogin();
                 }
             }).catch(function (err) {

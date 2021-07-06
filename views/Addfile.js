@@ -89,6 +89,8 @@ class Addfile extends React.Component {
 
                 <View style={Style.inpout}>
                     <Text style={{ fontSize: 18, flex: 1, textAlign: 'right', margin: 10 }}>درس :</Text>
+                    <Button onPress={()=>{alert('در صورتی که درس مد نظر خودتون رو پیدا نکردید کافیه فقط یه پیغام تو شبکه‌های اجتماعی به ما بدید. \n insatgram: @mojtaba_sji\n ابتدا از درست انتخاب شدن دانشگاه و رشتتون مطمئن بشید. مرسی :)')}} 
+                    style={{width:20, height:25,borderRadius:70, backgroundColor:'pink',justifyContent:'center',alignItems:'center'}}><Text style={{fontWeight:'700'}}>i</Text></Button>
                     <Picker style={[Style.textinp, { borderRadius: 6, width: 200, height: 40, padding: 10, backgroundColor: 'white' }]}
                         selectedValue={this.state.course}
                         placeholder={'لطفا انتخاب کنید'}
@@ -108,7 +110,7 @@ class Addfile extends React.Component {
                     <Text style={{ fontSize: 18, flex: 1, textAlign: 'right', margin: 10 }}>توضیحات :</Text>
                     <TextInput multiline style={[Style.textinp, { height: 200 }]} onChangeText={(val) => { this.setState({ description: val }) }} value={this.state.description}></TextInput>
                 </View>
-                {this.state.sending && <ActivityIndicator></ActivityIndicator>}
+                {this.state.sending && <ActivityIndicator size="small" color="#0000ff"></ActivityIndicator>}
                 <View style={Style.inpout} >
                     <Button onPress={() => { this.fileupload() }} block success style={{ flex: 1 }}>
                         <Text>ارسال</Text>

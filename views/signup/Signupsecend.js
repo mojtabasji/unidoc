@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Image, ImageBackground, TextInput, TouchableHighlight } from 'react-native';
-import { Text, Picker } from 'native-base';
+import { Text, Picker, Button } from 'native-base';
 import axios from 'axios';
 import Server from '../../Server';
 
@@ -16,6 +16,7 @@ class signupsecend extends React.Component {
 
 
     componentDidMount() {
+        alert('اطلاعات شما تنها برای عملکرد نرم‌افزار مورد استفاده قرار میگیرد و به صورت محرمانه حفظ خواهد شد.');
         this.props.Stater({ loading: true });
         let tis = this;
         axios.get(Server.url + 'universitis')
@@ -80,6 +81,8 @@ class signupsecend extends React.Component {
 
                 <View style={styles.inputContainer}>
                     <Image style={styles.inputIcon} source={require('../../storage/images/phone.png')} />
+                    <Button onPress={()=>{alert('صحت شماره تلفن شما در این نسخه چک نمیشه ولی در نسخه‌های بعدی برای احراز هویت استفاده خواهد شد.\n برای اینکه در آینده دسترسی خودتون رو از دست ندید توصیه میکنیم که شماره تلفن صحیح وارد کنید')}} 
+                    style={{width:18, height:20,borderRadius:70, backgroundColor:'pink',justifyContent:'center',alignItems:'center'}}><Text style={{fontWeight:'700'}}>i</Text></Button>
                     <TextInput style={styles.inputs}
                         placeholder="Phone"
                         textContentType='telephoneNumber'

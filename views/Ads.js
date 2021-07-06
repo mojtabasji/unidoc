@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Linking } from 'react-native';
 import { Video, AVPlaybackStatus } from 'expo-av';
-import { Button, } from 'native-base';
+import { Button, Icon } from 'native-base';
 import axios from 'axios';
 import Server from '../Server';
 
@@ -9,34 +9,40 @@ class App extends React.Component {
 
     state = {
         videoLink: '',
+        btnShow: false,
+        adsUrl:'http://unidoc.ir',
     };
 
     _onPlaybackStatusUpdate = playbackStatus => {
-        if (playbackStatus.didJustFinish) {
-            this.props.pageChanger(1);
+        //console.log('vid data: ',playbackStatus);
+        if (playbackStatus.positionMillis > 5000) {
+            this.setState({ btnShow: true });
             // The player has just finished playing and will stop.
         };
     }
 
-        componentDidMount() {
-            let tis = this;
-            axios.get(Server.url + 'ads/fully?app=unidoc')
-                .then((res) => {
-                    let rl = res.data;
-                    tis.setState({ videoLink: Server.geturl + rl });
-                    console.log(this.state.videoLink);
-                }).catch((err) => {
-                    console.log(err);
-                });
-        }
+    componentDidMount() {
+        let tis = this;
+        axios.get(Server.url + 'ads/fully?app=unidoc')
+            .then((res) => {
+                let dta = res.data;
+                console.log(dta);
+                tis.setState({ videoLink: Server.geturl + dta.adsurl, adsUrl:dta.adsorgurl });
+                console.log(tis.state.videoLink);
+            }).catch((err) => {
+                console.log('errr: ',err);
+            });
+    }
 
-        render() {
-            return (
-                <View style={styles.container}>
+    render() {
+        return (
+            <View style={styles.container}>
+                <TouchableOpacity style={{flex:1}} onPress={()=>{this.openUrl()}}>
                     <Video
                         shouldPlay
                         ref={this._handleVideoRef}
                         style={styles.video}
+                        resizeMode="stretch"
                         source={{
                             uri: this.state.videoLink,
                         }}
@@ -45,33 +51,44 @@ class App extends React.Component {
                         {(playbackStatus) => this._onPlaybackStatusUpdate(playbackStatus)}
                     >
                     </Video>
-                        <Button onPress={() => { this.props.pageChanger(3); }}
-                            style={{ width: 80, height: 50, borderRadius: 3,position:'absolute' }}>
-                            <Text>خروج</Text>
-                        </Button>
+                </TouchableOpacity>
+                {this.state.btnShow && this.exitBtn()}
 
-                </View>
-            );
-        }
-
+            </View>
+        );
     }
 
-    const styles = StyleSheet.create({
-        container: {
-            flex: 1,
-            justifyContent: 'center',
-            backgroundColor: '#ecf0f1',
-        },
-        video: {
-            alignSelf: 'center',
-            width: 350,
-            height: 300,
-        },
-        buttons: {
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-        },
-    });
+    openUrl = ()=>{
+        Linking.openURL(this.state.adsUrl);
+    }
 
-    export default App;
+    exitBtn = () => {
+        return (
+            <Button
+                onPress={() => { this.props.Stater({ page: 0 }); }}
+                style={{ position: 'absolute', marginTop: 20, marginRight: 20, backgroundColor: '#909497', borderRadius: 70 }}>
+                <Icon name="close" style={{ color: 'black', fontSize: 22 }}></Icon>
+            </Button>
+        );
+    }
+
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        flexDirection: 'row-reverse',
+    },
+    video: {
+        height: '100%',
+        width: '100%',
+        alignSelf: 'center',
+    },
+    buttons: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+});
+
+export default App;

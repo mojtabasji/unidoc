@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Image, TouchableOpacity, AsyncStorage, Alert } from 'react-native';
+import { StyleSheet, View, Image, TouchableOpacity, Alert, Linking, Platform } from 'react-native';
 import {
     Container, Header, Text, Body, Title, Left,
     Right, Button, Icon, Footer, Content, Fab, Card, Item, Input,
@@ -9,7 +9,7 @@ import Document from './Document.js';
 import Search from './Search.js';
 import Myfile from './Myfile.js';
 import Ads from './Ads';
-//import database from '@react-native-firebase/database';
+import * as database from '../database';
 
 
 
@@ -19,15 +19,13 @@ class primary extends React.Component {
     }
 
 
-    /*componentDidMount() {
-        database()
-            .ref('/user')
-            .set({
-                name: 'Ada Lovelace',
-                age: 31,
-            })
-            .then(() => console.log('Data set.'));
-    }*/
+    componentDidMount() {
+        let getState = this.props.restoreState('Primary');
+        if(getState != 'notFound')
+        {
+            this.setState(getState);
+        }
+    }
 
 
     /* 
@@ -45,6 +43,11 @@ class primary extends React.Component {
                     <Body style={{ alignItems: 'flex-start' }}>
                         <Title style={style.namelogo}>𝓤𝓷𝓲𝓓𝓸𝓬</Title>
                     </Body>
+                    <View>
+                        <Button onPress={()=>{this.connectToUs()}} style={{width:30,height:30,borderRadius:10, justifyContent:'center',alignItems:'center', backgroundColor:'pink', margin:15}}>
+                            <Text style={{ color: Platform.OS === 'ios' ? 'white' : 'blue' , fontWeight:'bold'}} >i</Text>
+                        </Button>
+                    </View>
                 </Header>
                 {this.showpage()}
                 {this.AdsPage()}
@@ -56,6 +59,22 @@ class primary extends React.Component {
                 </Footer>
             </Container>
         );
+    }
+
+    connectToUs = ()=>{
+        Alert.alert(
+            "ارتباط با ما",
+            "مشتاقانه منتظر نظرات، پیشنهادات، انتقادات و در میان گذاشتن مشکلات برای بهبود عملکرد تیم ما از سمت شما هستم.\ninstagram: @mojtaba_sji",
+            [
+              {
+                text: "بعدا",
+                onPress: () => console.log("Cancel Pressed"),
+                style: "cancel"
+              },
+              { text: "حتما", onPress: () => {Linking.openURL('https://www.instagram.com/mojtaba_sji/');} }
+            ],
+            { cancelable: false }
+          );
     }
 
     goback = () => {
@@ -85,13 +104,13 @@ class primary extends React.Component {
             case 2:
                 return (
                     <Content>
-                        <Document pageChanger={this.pageChanger} pager={this.state.selectedPage}></Document>
+                        <Document storeState={this.props.storeState} restoreState={this.props.restoreState} pageChanger={this.pageChanger} adsControll={this.props.adsControll} pager={this.state.selectedPage}></Document>
                     </Content>
                 );
             case 3:
                 return (
                     <Content>
-                        <Search pageChanger={this.pageChanger} pager={this.state.selectedPage}></Search>
+                        <Search storeState={this.props.storeState} restoreState={this.props.restoreState} adsControll={this.props.adsControll} pageChanger={this.pageChanger} pager={this.state.selectedPage}></Search>
                     </Content>
                 );
 
@@ -121,16 +140,6 @@ class primary extends React.Component {
                             <Icon name="exit" />
                         </View>
                     </Button>
-                    <Button onPress={() => { this.setState({ selectedPage: 4 }) }} style={{ backgroundColor: '#DD5144' }}>
-                        <View>
-                            <Icon name="add" />
-                        </View>
-                    </Button>
-                    <Button onPress={() => { this.sqltesst() }} style={{ backgroundColor: '#DD5144' }}>
-                        <View>
-                            <Icon name="magnifier" />
-                        </View>
-                    </Button>
                     <Button onPress={() => { this.setState({ selectedPage: 14 }) }} style={{ backgroundColor: '#3B5998' }}>
                         <Icon name="settings" />
                     </Button>
@@ -142,15 +151,6 @@ class primary extends React.Component {
         }
     }
 
-    sqltesst = () => {
-/*
-        database()
-            .ref('/user')
-            .once('value')
-            .then(snapshot => {
-                console.log('User data: ', snapshot.val());
-            });*/
-    }
 
 
     logOut = () => {
@@ -159,18 +159,16 @@ class primary extends React.Component {
     }
 
     storLogout = async () => {
-        try {
-            await AsyncStorage.setItem(
-                'status',
-                'logedOut'
-            );
-        } catch (error) {
-            // Error saving data
-        }
+
+        database.setData({ status: 'logedOut', passwordhash: 'passwordhash', username: 'username' }).then(
+            (resp) => { console.log(resp); }).catch(
+            (err) => { console.log(err); }
+        );
     };
 
-    pageChanger = (val) => {
-        this.setState({ selectedPage: val });
+    pageChanger = async(val) => {
+        await this.setState({ selectedPage: val });
+        await this.props.storeState('Primary', this.state);
     }
 
     pagesSelect = () => {

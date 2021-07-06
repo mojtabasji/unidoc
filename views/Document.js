@@ -13,13 +13,19 @@ class document extends React.Component {
         selecteduniversity: '',
         selectedfield: '',
         documents: [],
-        selectedDoc:'',
+        selectedDoc: '',
     }
 
     componentDidMount() {
+        /*let getState = this.props.restoreState('Document');
+        console.log('Docment state: ', getState);
+        if (getState != 'notFound') {
+            this.setState(getState);
+        }*/
         let tis = this;
         axios.get(Server.url + 'universitis')
             .then((resp) => {
+                console.log(resp);
                 tis.setState({ universitis: resp.data.universitis });
             }).catch((err) => {
                 console.log(err);
@@ -42,7 +48,11 @@ class document extends React.Component {
                         <FlatList numColumns={2} style={{}}
                             data={this.state.universitis}
                             renderItem={({ item }) => (
-                                <TouchableOpacity style={{ flex: 1, flexDirection: 'column', margin: 10, justifyContent: 'center', alignItems: 'center' }} onPress={() => { this.props.pageChanger(21); this.setState({ selecteduniversity: item.id }); }}>
+                                <TouchableOpacity style={{ flex: 1, flexDirection: 'column', margin: 10, justifyContent: 'center', alignItems: 'center' }} onPress={async() => {
+                                    this.props.pageChanger(21);
+                                    this.setState({ selecteduniversity: item.id });
+                                    this.props.adsControll();
+                                }}>
                                     <Card style={{ borderRadius: 10, margin: 10, flex: 1, height: 140, width: 140, justifyContent: 'center', alignItems: 'center' }}>
                                         <Image style={{ height: 80, width: 80, marginBottom: 10 }} source={{ uri: Server.geturl + item.image }}></Image>
                                         <Text style={{ fontWeight: '600' }}>{item.name}</Text>

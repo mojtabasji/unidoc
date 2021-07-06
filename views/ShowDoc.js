@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Image, Platform, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Image, Platform, ActivityIndicator, Linking } from 'react-native';
 import { icon, Card, CardItem, Button, Text, Left, Right } from 'native-base';
 import Server from '../Server';
 import axios from 'axios';
@@ -48,7 +48,7 @@ class myfile extends React.Component {
                                         <Text>دریافت</Text>
                                     </Button>
                                     {this.state.loading &&
-                                        <ActivityIndicator color={'green'}></ActivityIndicator>}
+                                        <ActivityIndicator size="small" color="#0000ff"></ActivityIndicator>}
                                 </Right>
                             </View>
                         </View>
@@ -84,10 +84,7 @@ class myfile extends React.Component {
     }
 
     downloadFunction = async () => {
-        this.setState({loading: true});
-        if (Platform.OS === 'android') {
-            IntentLauncher.startActivityAsync(IntentLauncher.ACTION_LOCATION_SOURCE_SETTINGS);
-        }
+        this.setState({ loading: true });
         let down = Server.geturl + this.state.file.url;
         down = down.replace(/ /g, '%20');
         console.log(down);
@@ -95,32 +92,24 @@ class myfile extends React.Component {
         let docname = down.split('/');
         docname = docname[docname.length - 1];
         let path = FileSystem.cacheDirectory + docname;
-        //alert(path);
-        await FileSystem.downloadAsync(
-            down,
-            path,
-        )
-            .then(({ uri }) => {
-                if (Platform.OS === 'ios') {
-
+        if (Platform.OS === 'ios') {
+            await FileSystem.downloadAsync(
+                down,
+                path,
+            )
+                .then(({ uri }) => {
                     Sharing.shareAsync(uri);
-                }
-                else {
-                    FileSystem.getContentUriAsync(uri).then(cUri => {
-                        console.log(cUri);
-                        IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
-                            data: cUri,
-                            flags: 1,
-                        });
-                    });
-                }
-                tis.setState({loading:false});
-            })
-            .catch(error => {
-                console.error(error);
-                tis.setState({loading: false});
-            });
-
+                    tis.setState({ loading: false });
+                })
+                .catch(error => {
+                    console.error(error);
+                    tis.setState({ loading: false });
+                });
+        }
+        else {
+            Linking.openURL(down);
+            tis.setState({ loading: false });
+        }
 
     }
 }

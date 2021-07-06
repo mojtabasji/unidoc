@@ -15,7 +15,11 @@ class Doclist extends React.Component {
             <View style={{ margin: 15 }}>
                 {this.state.documentList.map((item) => {
                     return (
-                        <TouchableOpacity onPress={()=>{this.props.ParentStater({selectedDoc:item.id}); this.props.pageChanger(this.props.toGo)}}>
+                        <TouchableOpacity onPress={async() => {
+                            await this.props.ParentStater({ selectedDoc: item.id });
+                            await this.props.pageChanger(this.props.toGo);
+                            await this.props.adsControll();
+                        }}>
                             <Card style={{ borderRadius: 8, margin: 10, alignItems: 'center' }}>
                                 <Text style={{ margin: 10, fontSize: 22, fontWeight: '600' }}>{item.courseName}</Text>
                                 <Text style={{ margin: 10, fontSize: 20 }}>{item.title}</Text>

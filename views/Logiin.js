@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { AsyncStorage } from 'react-native';
 import {
   StyleSheet,
   Text,
@@ -12,6 +11,7 @@ import {
 } from 'react-native';
 import Server from '../Server.js';
 import axios from 'axios';
+import * as database from '../database';
 
 export default class LoginView extends Component {
 
@@ -22,28 +22,17 @@ export default class LoginView extends Component {
     loding: false,
   }
 
-  storLogin = async () => {
-    try {
-      await AsyncStorage.setItem(
-        'status',
-        'logedIn'
-      );
-      await AsyncStorage.setItem(
-        'passwordHash',
-        this.state.passwordHash
-      );
-      await AsyncStorage.setItem(
-        'userName',
-        this.state.userName
-      );
-    } catch (error) {
-      // Error saving data
-    }
-  };
+  storLogin = ()=>{
+    database.setData({status:'logedIn',passwordhash:this.state.passwordHash,username:this.state.userName}).then(
+      (resp)=>{console.log(resp);}).catch(
+      (err)=>{console.log(err);}
+    );
+  }
 
   loginbtn = () => {
     let res = '';
     let tis = this;
+    this.setState({loding:true});
     axios.post(Server.url + "auth", {
       userName: this.state.userName,
       password: this.state.password,
@@ -61,9 +50,11 @@ export default class LoginView extends Component {
           alert('userName or password invalid.');
           tis.setState({ userName: '', password: '' });
         }
+        tis.setState({loding:false});
       })
       .catch(function (err) {
         console.log(err);
+        tis.setState({loding:false});
       })
   }
 

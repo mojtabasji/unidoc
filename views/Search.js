@@ -13,6 +13,15 @@ class search extends React.Component {
         Documents: [],
         selectedDoc:'',
     }
+
+    componentDidMount() {
+        let getstate = this.props.restoreState('Search');
+        if(getstate != 'notFound')
+        {
+            this.setState(getstate);
+        }
+    }
+
     render() {
         return (
             <View>
@@ -36,7 +45,7 @@ class search extends React.Component {
                                 <Icon name="ios-people" />
                             </Item>
                         </Card>
-                        { !this.state.loading && <Doclist Docs={this.state.Documents} pageChanger={this.props.pageChanger} ParentStater={this.searchStater} toGo={31}></Doclist>}
+                        { !this.state.loading && <Doclist Docs={this.state.Documents} storeState={this.props.storeState} restoreState={this.props.restoreState} adsControll={this.props.adsControll} pageChanger={this.props.pageChanger} ParentStater={this.searchStater} toGo={31}></Doclist>}
                     </View>
                 );
                 case 31:
@@ -46,22 +55,24 @@ class search extends React.Component {
         }
     }
 
-    searching = () => {
+    searching = async () => {
         this.setState({ loading: true });
         let tis = this;
         axios.get(Server.url + 'documents/search?searchtext=' + tis.state.searchText)
             .then((response) => {
-                console.log(response.data);
                 tis.setState({ Documents: response.data });
                 tis.setState({ loading: false });
             })
             .catch((err) => {
                 console.log(err);
             });
+            
+        await this.props.storeState('Search', this.state);
     }
 
-    searchStater = (val)=>{
-        this.setState(val);
+    searchStater = async(val)=>{
+        await this.setState(val);
+        await this.props.storeState('Search', this.state);
     }
 }
 

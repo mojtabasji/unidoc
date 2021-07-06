@@ -5,7 +5,10 @@ import { Container, Header, Left, Body, Right, Button, Icon, Title } from 'nativ
 import Logiin from './views/Logiin';
 import Primary from './views/Primery';
 import Signup from './views/Signup';
-import * as SQLite from 'expo-sqlite';
+import * as database from './database';
+import axios from 'axios';
+import Server from './Server';
+import Ads from './views/Ads';
 
 
 class App extends React.Component {
@@ -15,28 +18,37 @@ class App extends React.Component {
     header: 'UniDoc',
     passwordHash: '',
     page: 0,
+    adsStatusCode: 0,
+    adsCounter: 0,
   };
 
-  _retrieveData = async () => {
+
+  storeState = (pageName, stt) => {
+    this.setState({ [pageName]: stt });
+  }
+
+  restoreState = (pageName) => {
     try {
-      const value = await AsyncStorage.getItem('status');
-      if (value !== null) {
-        // We have data!!
-        if (value == 'logedIn') {
-          this.setState({ logedin: true, page: 0 });
-          //load username from storage
-          const usern = await AsyncStorage.getItem('userName');
-          const passhash = await AsyncStorage.getItem('passwordHash');
-          console.log('usern',usern);
-          this.setState({userName:usern,passwordHash:passhash});
-        }
-        else this.setState({ logedin: false, page: -1 });
-      }
-
-    } catch (error) {
-      this._storeData();
+      return this.state[pageName];
     }
-  };
+    catch {
+      return 'notFound';
+    }
+  }
+
+  readDb = () => {
+    database.getData().then((data) => {
+      console.log('Db msg: ', data);
+      if (data.status == 'logedIn') {
+        this.setState({ logedin: true, page: 0 });
+        this.setState({ userName: data.username, passwordHash: data.passwordhash });
+      }
+      else this.setState({ logedin: false, page: -1 });
+    }).catch((err) => {
+      console.log('Db msg: ',err);
+      database.setData({ status: 'logedOut', username: 'username', passwordhash: 'passwordhash' }).catch((err) => { console.log(err); });
+    });
+  }
 
   mystatus = () => {
     //this._retrieveData();
@@ -46,17 +58,6 @@ class App extends React.Component {
     else { this.setState({ page: 0 }); }
   }
 
-  _storeData = async () => {
-    try {
-      await AsyncStorage.setItem(
-        'status',
-        'logedOut'
-      );
-    } catch (error) {
-      // Error saving data
-    }
-    this._retrieveData();
-  };
 
   stater = (value) => {
     this.setState(value);
@@ -74,37 +75,42 @@ class App extends React.Component {
         }
       case 0:
         {
-          return <Primary Stater={this.stater} State={this.state} ></Primary>
+          return <Primary Stater={this.stater} storeState={this.storeState} restoreState={this.restoreState} adsControll={this.adsControll} State={this.state} ></Primary>
+        }
+      case 9:
+        {
+          return <Ads Stater={this.stater}  ></Ads>
         }
       default:
         return;
     }
   }
-//LIMIT 1
+
+  adsControll = (comeFrom) => {
+    if (this.state.adsStatusCode != 0) {
+      this.setState({ adsCounter: this.state.adsCounter + 1 });
+      if (this.state.adsCounter == this.state.adsStatusCode) {
+        this.setState({ adsCounter: 0, page: 9 });
+      }
+    }
+  }
+
   componentDidMount() {
-
-    const mydb = SQLite.openDatabase('unidoc');
-
-    mydb.transaction(
-      tx =>{
-        tx.executeSql("create table if not exists status (username, password, passwordHash, logstate);",[],(err)=>{console.log(err)},(val)=>{console.log(val)});
-        tx.executeSql("select * from status ",[],null,(_, { rows }) =>
-        {console.log(JSON.stringify(rows))
-        });   /*(val)=>{
-          if(val == null)
-          {
-            tx.executeSql("insert into status (username, password, passwordHash, logstate) VALUES ('username','password', 'passwordHash','out');");
-          }
-          else{
-            console.log(val);
-          }
-        },alert('here'));*/
-        
-      },
-      null,null
-    );
-    this._retrieveData();
+    this.readDb();
     this.mystatus();
+    let tis = this;
+    axios.get(Server.url + 'ads/getstatuscode', {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json'
+      }
+    }
+    ).then((resp) => {
+      tis.setState({ adsStatusCode: resp.data.statusCode });
+    }).catch((err) => {
+      console.log(err);
+      tis.setState({ adsStatusCode: 0 });
+    });
   }
 
   render() {
