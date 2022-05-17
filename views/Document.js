@@ -53,8 +53,9 @@ class document extends React.Component {
                                     this.setState({ selecteduniversity: item.id });
                                     this.props.adsControll();
                                 }}>
-                                    <Card style={{ borderRadius: 10, margin: 10, flex: 1, height: 140, width: 140, justifyContent: 'center', alignItems: 'center' }}>
-                                        <Image style={{ height: 80, width: 80, marginBottom: 10 }} source={{ uri: Server.geturl + item.image }}></Image>
+                                    <Card style={{ borderRadius: 10, margin: 10, flex: 1, height: 140,
+                                         width: 140, justifyContent: 'center', backgroundColor:this.props.themcolor.cardClr, alignItems: 'center' }}>
+                                        <Image style={{ height: 80, width: 80, marginBottom: 10, borderWidth:2,borderRadius:20 }} source={{ uri: Server.geturl + item.image }}></Image>
                                         <Text style={{ fontWeight: '600' }}>{item.name}</Text>
                                     </Card>
                                 </TouchableOpacity>

@@ -13,6 +13,21 @@ import axios from 'axios';
 import Signupfirst from './signup/Signupfirst';
 import Signupsecend from './signup/Signupsecend';
 import { Text, Button, Fab } from 'native-base';
+import * as Font from 'expo-font';
+
+let customFonts = {
+    'GerthDemo': require('../assets/fonts/GerthDemo.ttf'),
+    'StyleScript-Regular': require('../assets/fonts/StyleScript-Regular.ttf'),
+    'Cinzel-Regular': require('../assets/fonts/Cinzel/Cinzel-Regular.ttf'),
+    'Cinzel-Bold': require('../assets/fonts/Cinzel/Cinzel-Bold.ttf'),
+    'Cinzel-Medium': require('../assets/fonts/Cinzel/Cinzel-Medium.ttf'),
+  
+    'FrankRuhlLibre-Light': require('../assets/fonts/Frank_Ruhl_Libre/FrankRuhlLibre-Light.ttf'),
+    'FrankRuhlLibre-Regular': require('../assets/fonts/Frank_Ruhl_Libre/FrankRuhlLibre-Regular.ttf'),
+    
+    'LobsterTwo-Regular': require('../assets/fonts/Lobster_Two/LobsterTwo-Regular.ttf'),
+    'LobsterTwo-Italic': require('../assets/fonts/Lobster_Two/LobsterTwo-Italic.ttf'),
+  };
 
 export default class LoginView extends Component {
 
@@ -28,6 +43,15 @@ export default class LoginView extends Component {
         loding: false,
         passwordHash: '',
     }
+
+    _loadFontsAsync() {
+        Font.loadAsync(customFonts);
+        this.setState({ fontsLoaded: true });
+      }
+    
+    componentDidMount(){
+        this._loadFontsAsync();
+      }
 
     Stater = (value) => {
         this.setState(value);
@@ -82,7 +106,7 @@ export default class LoginView extends Component {
 
 
     signUp = () => {
-        if (this.university != '' && this.field != '' && this.phone != '') {
+        if (this.state.university != '' && this.state.field != '' && this.state.phone != '') {
             this.setState({ loading: true });
             let res = '';
             let tis = this;
@@ -124,8 +148,8 @@ export default class LoginView extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <Image style={styles.logo} source={require('../storage/images/logo.png')} />
-                <Text style={styles.namelogo}>𝓤𝓷𝓲𝓓𝓸𝓬</Text>
+                <Image style={styles.logo} source={require('../storage/images/logoroid.png')} />
+                <Text style={[styles.namelogo,{fontFamily:'GerthDemo'}]}>Unidoc</Text>
                 {this.pageSwitch()}
                 {this.buttonSwich()}
                 <TouchableHighlight style={styles.buttonContainer} onPress={() => this.gotoLogin()}>

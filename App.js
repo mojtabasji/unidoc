@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { AsyncStorage } from 'react-native';
-import { Container, Header, Left, Body, Right, Button, Icon, Title } from 'native-base';
+import { Container, Header, Left, Body, Right, Button, Icon, Title, } from 'native-base';
 import Logiin from './views/Logiin';
 import Primary from './views/Primery';
 import Signup from './views/Signup';
@@ -46,7 +46,7 @@ class App extends React.Component {
       else this.setState({ logedin: false, page: -1 });
     }).catch((err) => {
       console.log('Db msg: ',err);
-      database.setData({ status: 'logedOut', username: 'username', passwordhash: 'passwordhash' }).catch((err) => { console.log(err); });
+      database.setData({ status: 'logedOut', username: 'username', passwordhash: 'passwordhash',theme:'sunny' }).catch((err) => { console.log(err); });
     });
   }
 

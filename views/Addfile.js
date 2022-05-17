@@ -27,11 +27,7 @@ class Addfile extends React.Component {
     componentDidMount() {
         let courseList = '';
         let tis = this;
-        axios.get(Server.url + 'user/course', {
-            headers: {
-                Cookie: ";userName=" + tis.props.State.userName + ";" + " passwordHash=" + tis.props.State.passwordHash + ";",
-            }
-        })
+        axios.get(Server.url + 'user/course?'+ "passwordHash=" + tis.props.State.passwordHash + "&" + "userName=" + tis.props.State.userName,)
             .then(function (response) {
                 courseList = response.data;
             })
@@ -45,11 +41,7 @@ class Addfile extends React.Component {
 
 
         let filetypeList = '';
-        axios.get(Server.url + 'user/filetype', {
-            headers: {
-                Cookie: ";userName=" + tis.props.State.userName + ";" + " passwordHash=" + tis.props.State.passwordHash + ";",
-            }
-        })
+        axios.get(Server.url + 'user/filetype?'+ "passwordHash=" + tis.props.State.passwordHash + "&" + "userName=" + tis.props.State.userName,)
             .then(function (response) {
                 filetypeList = response.data;
             })
@@ -112,7 +104,7 @@ class Addfile extends React.Component {
                 </View>
                 {this.state.sending && <ActivityIndicator size="small" color="#0000ff"></ActivityIndicator>}
                 <View style={Style.inpout} >
-                    <Button onPress={() => { this.fileupload() }} block success style={{ flex: 1 }}>
+                    <Button disabled={this.state.sending} onPress={() => { this.fileupload() }} block success style={{ flex: 1, backgroundColor: this.state.sending?'gray':'lightgreen', }}>
                         <Text>ارسال</Text>
                     </Button>
                 </View>
@@ -153,10 +145,9 @@ class Addfile extends React.Component {
 
                 },
             })*/
-            axios.post(Server.url + 'user/profile/myfile/save', data,
+            axios.post(Server.url + 'user/profile/myfile/save?'+"userName=" + tis.props.State.userName + "&passwordHash=" + tis.props.State.passwordHash, data,
                 {
                     headers: {
-                        Cookie: ";userName=" + tis.props.State.userName + ";" + " passwordHash=" + tis.props.State.passwordHash + ";",
                         'Content-Type': 'multipart/form-data; ',
 
                     },
@@ -164,13 +155,14 @@ class Addfile extends React.Component {
                 })
                 .then((res) => {
                     console.log('res : ', res.data);
-                    this.setState({ sending: false });
+                    tis.setState({ sending: false });
+                    tis.props.HomeStater({fileAdded:true});
                     Alert.alert("اپلود",
                         'ارسال فایل انجام شد',
                         [{
                             text: 'تایید',
                             onPress: () => {
-                                this.props.pageChanger(1);
+                                tis.props.pageChanger(1);
                             },
                         }
                         ]

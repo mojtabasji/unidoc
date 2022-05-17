@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, View, Image, ImageBackground, TextInput, TouchableHighlight } from 'react-native';
-import { Text, Picker, Button } from 'native-base';
+import { StyleSheet, View, Image, TouchableOpacity, ImageBackground, TextInput, TouchableHighlight } from 'react-native';
+import { Text, Picker, Button, Icon } from 'native-base';
 import axios from 'axios';
 import Server from '../../Server';
 
@@ -19,9 +19,11 @@ class signupsecend extends React.Component {
         alert('اطلاعات شما تنها برای عملکرد نرم‌افزار مورد استفاده قرار میگیرد و به صورت محرمانه حفظ خواهد شد.');
         this.props.Stater({ loading: true });
         let tis = this;
+        //console.log('get universities: ' + Server.url + 'universitis')
         axios.get(Server.url + 'universitis')
             .then(function (res) {
                 tis.setState({ Universitis: res.data.universitis });
+                //console.log( tis.state.Universitis);
             })
             .catch(function (err) {
                 console.log(err.message);
@@ -51,9 +53,9 @@ class signupsecend extends React.Component {
     render() {
         return (
             <View>
-                <View style={styles.inputContainer}>
+                <View style={[styles.inputContainer,{height:50}]}>
                     <Image style={styles.inputIcon} source={require('../../storage/images/university.png')} />
-                    <Picker style={styles.inputs}
+                    <Picker style={[{backgroundColor:'red', height:100},styles.inputs]}
                         placeholder="university"
                         selectedValue={this.state.uniselected}
                         onValueChange={async (val) => {
@@ -61,14 +63,14 @@ class signupsecend extends React.Component {
                             this.props.Stater({ university: val });
                             this.setfields();
                         }} >
-                        {this.state.Universitis.map((val) => { return (<Picker.Item label={val.name} value={val.id}></Picker.Item>) })}
+                        {this.state.Universitis.map((val) => { return (<Picker.Item label={val.name} value={val.id} style={{ height: 30 }}></Picker.Item>) })}
                     </Picker>
                 </View>
-
-                <View style={styles.inputContainer}>
+                        
+                <View style={[styles.inputContainer,{height:50}]}>
                     <Image style={styles.inputIcon} source={require('../../storage/images/filed.png')} />
-                    <Picker style={styles.inputs}
-                    mode={'dropdown'}
+                    <Picker style={[styles.inputs]}
+                        mode={'dropdown'}
                         placeholder="field"
                         selectedValue={this.state.fieldselected}
                         onValueChange={(val) => {
@@ -79,15 +81,18 @@ class signupsecend extends React.Component {
                     </Picker>
                 </View>
 
-                <View style={styles.inputContainer}>
-                    <Image style={styles.inputIcon} source={require('../../storage/images/phone.png')} />
-                    <Button onPress={()=>{alert('صحت شماره تلفن شما در این نسخه چک نمیشه ولی در نسخه‌های بعدی برای احراز هویت استفاده خواهد شد.\n برای اینکه در آینده دسترسی خودتون رو از دست ندید توصیه میکنیم که شماره تلفن صحیح وارد کنید')}} 
-                    style={{width:18, height:20,borderRadius:70, backgroundColor:'pink',justifyContent:'center',alignItems:'center'}}><Text style={{fontWeight:'700'}}>i</Text></Button>
-                    <TextInput style={styles.inputs}
-                        placeholder="Phone"
-                        textContentType='telephoneNumber'
-                        underlineColorAndroid='transparent'
-                        onChangeText={(phone) => this.props.Stater({ phone })} />
+                <View style={{ flexDirection: "row", }}>
+                    <View style={styles.inputContainer}>
+                        <Image style={styles.inputIcon} source={require('../../storage/images/phone.png')} />
+                        <TextInput style={styles.inputs}
+                            placeholder="Phone"
+                            textContentType='telephoneNumber'
+                            underlineColorAndroid='transparent'
+                            onChangeText={(phone) => this.props.Stater({ phone })} />
+
+                        <TouchableOpacity onPress={() => { alert('صحت شماره تلفن شما در این نسخه چک نمی شود ولی در نسخه‌های بعدی برای احراز هویت استفاده خواهد شد.\n برای اینکه در آینده دسترسی خودتون رو از دست ندید توصیه میکنیم که شماره تلفن صحیح وارد کنید') }}
+                            style={{ borderRadius: 70, position: 'absolute', right: 0, }}><Icon name="help-circle-outline"></Icon></TouchableOpacity>
+                    </View>
                 </View>
             </View>
         );
@@ -113,6 +118,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     inputContainer: {
+        padding: 10,
         borderBottomColor: '#F5FCFF',
         backgroundColor: '#FFFFFF',
         borderRadius: 30,

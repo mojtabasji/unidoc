@@ -2,57 +2,161 @@ import React from 'react';
 import { StyleSheet, View, Image, TouchableOpacity, Alert, Linking, Platform } from 'react-native';
 import {
     Container, Header, Text, Body, Title, Left,
-    Right, Button, Icon, Footer, Content, Fab, Card, Item, Input,
+    Right, Button, Icon, Content, Fab, Card, Item, Input, Footer, StyleProvider,
 } from 'native-base';
+import getTheme from '../native-base-theme/components';
+import material from '../native-base-theme/variables/material';
 import Home from './Home.js';
 import Document from './Document.js';
 import Search from './Search.js';
 import Myfile from './Myfile.js';
 import Ads from './Ads';
 import * as database from '../database';
+import * as Font from 'expo-font';
 
+// #############  <Text style={{ color: Platform.OS === 'ios' ? 'white' : 'blue', fontWeight: 'bold' }} >i</Text>
+
+let customFonts = {
+    'GerthDemo': require('../assets/fonts/GerthDemo.ttf'),
+    'StyleScript-Regular': require('../assets/fonts/StyleScript-Regular.ttf'),
+    'Cinzel-Regular': require('../assets/fonts/Cinzel/Cinzel-Regular.ttf'),
+    'Cinzel-Bold': require('../assets/fonts/Cinzel/Cinzel-Bold.ttf'),
+    'Cinzel-Medium': require('../assets/fonts/Cinzel/Cinzel-Medium.ttf'),
+
+    'FrankRuhlLibre-Light': require('../assets/fonts/Frank_Ruhl_Libre/FrankRuhlLibre-Light.ttf'),
+    'FrankRuhlLibre-Regular': require('../assets/fonts/Frank_Ruhl_Libre/FrankRuhlLibre-Regular.ttf'),
+
+    'LobsterTwo-Regular': require('../assets/fonts/Lobster_Two/LobsterTwo-Regular.ttf'),
+    'LobsterTwo-Italic': require('../assets/fonts/Lobster_Two/LobsterTwo-Italic.ttf'),
+};
+
+const moon = {
+    searchClr: '#a5ecfc',
+    fabClr: '#FF449F',
+    fabBtnClr: '#DDB149',
+    HederClr: '#254B62',
+    FooterClr: '#1D3E53',
+    bgClr: '#77ABB7',
+    cardClr: '#476D7C',
+};
+
+const sunny = {
+    searchClr: 'white',
+    fabClr: '#1b64a6',
+    fabBtnClr: '#8fb9de',
+    HederClr: 'white',
+    FooterClr: 'white',
+    bgClr: 'white',
+    cardClr: 'white',
+};
+
+const snow = {
+    searchClr: 'white',
+    fabClr: '#0890f7',
+    fabBtnClr: '#3fa56e',
+    HederClr: '#A4EBF3',
+    FooterClr: '#7e9fb0',
+    bgClr: '#e3f7f7',
+    cardClr: '#CCF2F4',
+};
+
+let themcolor = {};
 
 
 class primary extends React.Component {
     state = {
         selectedPage: 3,
+        fontsLoaded: false,
+        theme: 'sunny',
     }
 
+
+    changeTheme = async () => {
+         switch (this.state.theme) {
+            case 'moon':
+                this.setState({ theme: 'sunny' });
+                themcolor = sunny;
+                break;
+            case 'sunny':
+                this.setState({ theme: 'snow' });
+                themcolor = snow;
+                break;
+            case 'snow':
+                this.setState({ theme: 'moon' });
+                themcolor = moon;
+                break;
+            default:
+                this.setState({ theme: 'sunny' });
+                themcolor = sunny;
+                break;
+        };
+        let tis=this;
+        await this.forceUpdate();
+        await database.setData({status: 'logedIn', passwordhash: tis.props.State.passwordHash, username: tis.props.State.userName, theme:tis.state.theme }).then(
+            (resp) => { console.log(resp); }).catch(
+                (err) => { console.log(err); }
+            );
+    }
+
+    async _loadFontsAsync() {
+        await Font.loadAsync(customFonts);
+        this.setState({ fontsLoaded: true });
+    }
 
     componentDidMount() {
+        this._loadFontsAsync();
         let getState = this.props.restoreState('Primary');
-        if(getState != 'notFound')
-        {
+        if (getState != 'notFound') {
             this.setState(getState);
         }
+        database.getData().then((data) => {
+            console.log("theme from db:", data);
+            try {
+                switch (data.theme) {
+                    case 'moon':
+                        themcolor = moon;
+                        break;
+                    case 'sunny':
+                        themcolor = sunny;
+                        break;
+                    case 'snow':
+                        themcolor = snow;
+                        break;
+                };
+            } catch { };
+            this.setState({ theme: data.theme });
+        }
+        );
     }
 
 
-    /* 
+    /*     
     <Image style={style.back_arrow} source={{ uri: 'https://cdn4.iconfinder.com/data/icons/evil-icons-user-interface/64/arrow_left2-128.png' }} /> */
 
     render() {
         return (
-            <Container>
-                <Header>
-                    <View style={{ width: 60, marginBottom: 5, marginLeft: 5, flexDirection: 'row' }}>
+            <Container style={{ backgroundColor: themcolor.bgClr }}>
+                <Header style={{ backgroundColor: themcolor.HederClr }}>
+                    <View style={{ width: 50, marginBottom: 5, marginLeft: 5, flexDirection: 'row', }}>
                         <TouchableOpacity onPress={() => { this.goback() }} style={{ justifyContent: 'center' }} transparent>
                             <Icon name={"chevron-back-outline"} style={{ fontSize: 30, marginTop: 7 }}></Icon>
                         </TouchableOpacity>
                     </View>
-                    <Body style={{ alignItems: 'flex-start' }}>
-                        <Title style={style.namelogo}>𝓤𝓷𝓲𝓓𝓸𝓬</Title>
+                    <Body style={{ alignItems: 'center', justifyContent: 'center' }}>
+                        <TouchableOpacity onPress={this.changeTheme}>
+                            {this.state.fontsLoaded && <Title style={[style.namelogo, { fontFamily: 'GerthDemo', height: 30 }]}>UniDoc <Icon name={this.state.theme} style={{ fontSize: 15 }}></Icon></Title>}
+                        </TouchableOpacity>
                     </Body>
-                    <View>
-                        <Button onPress={()=>{this.connectToUs()}} style={{width:30,height:30,borderRadius:10, justifyContent:'center',alignItems:'center', backgroundColor:'pink', margin:15}}>
-                            <Text style={{ color: Platform.OS === 'ios' ? 'white' : 'blue' , fontWeight:'bold'}} >i</Text>
-                        </Button>
+                    <View style={{ width: 50 }}>
+                        {false && <TouchableOpacity onPress={() => { this.connectToUs() }} style={{ width: 30, height: 30, borderRadius: 10, justifyContent: 'center', alignItems: 'center', margin: 15 }}>
+                            <Icon name="help-circle-outline"></Icon>
+                        </TouchableOpacity>}
                     </View>
                 </Header>
                 {this.showpage()}
                 {this.AdsPage()}
                 {this.fabBtn()}
-                <Footer >
+                <Footer style={{ backgroundColor: themcolor.FooterClr }}>
                     <View style={style.footer}>
                         {this.pagesSelect()}
                     </View>
@@ -61,20 +165,20 @@ class primary extends React.Component {
         );
     }
 
-    connectToUs = ()=>{
+    connectToUs = () => {
         Alert.alert(
             "ارتباط با ما",
             "مشتاقانه منتظر نظرات، پیشنهادات، انتقادات و در میان گذاشتن مشکلات برای بهبود عملکرد تیم ما از سمت شما هستم.\ninstagram: @mojtaba_sji",
             [
-              {
-                text: "بعدا",
-                onPress: () => console.log("Cancel Pressed"),
-                style: "cancel"
-              },
-              { text: "حتما", onPress: () => {Linking.openURL('https://www.instagram.com/mojtaba_sji/');} }
+                {
+                    text: "بعدا",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel"
+                },
+                { text: "حتما", onPress: () => { Linking.openURL('https://www.instagram.com/mojtaba_sji/'); } }
             ],
             { cancelable: false }
-          );
+        );
     }
 
     goback = () => {
@@ -99,18 +203,23 @@ class primary extends React.Component {
             case 1:
                 return (
                     <Content>
-                        <Home Stater={this.props.Stater} pager={this.state.selectedPage} State={this.props.State} pageChanger={this.pageChanger}></Home>
+                        <Home Stater={this.props.Stater} pager={this.state.selectedPage} State={this.props.State}
+                            pageChanger={this.pageChanger} themcolor={themcolor}></Home>
                     </Content>);
             case 2:
                 return (
                     <Content>
-                        <Document storeState={this.props.storeState} restoreState={this.props.restoreState} pageChanger={this.pageChanger} adsControll={this.props.adsControll} pager={this.state.selectedPage}></Document>
+                        <Document storeState={this.props.storeState} restoreState={this.props.restoreState}
+                            pageChanger={this.pageChanger} adsControll={this.props.adsControll}
+                            themcolor={themcolor} pager={this.state.selectedPage}></Document>
                     </Content>
                 );
             case 3:
                 return (
                     <Content>
-                        <Search storeState={this.props.storeState} restoreState={this.props.restoreState} adsControll={this.props.adsControll} pageChanger={this.pageChanger} pager={this.state.selectedPage}></Search>
+                        <Search storeState={this.props.storeState} restoreState={this.props.restoreState}
+                            adsControll={this.props.adsControll} pageChanger={this.pageChanger}
+                            themcolor={themcolor} pager={this.state.selectedPage}></Search>
                     </Content>
                 );
 
@@ -131,19 +240,19 @@ class primary extends React.Component {
                     active={this.state.fabactive}
                     direction="up"
                     containerStyle={{ marginBottom: 50 }}
-                    style={{ backgroundColor: '#5067FF' }}
+                    style={{ backgroundColor: themcolor.fabClr }}
                     position="bottomLeft"
                     onPress={() => this.setState({ fabactive: !this.state.fabactive })}>
                     <Icon name={'share'} />
-                    <Button onPress={() => { this.logOut() }} style={{ backgroundColor: '#DD5144' }}>
+                    <Button onPress={() => { this.logOut() }} style={{ backgroundColor: themcolor.fabBtnClr }}>
                         <View>
                             <Icon name="exit" />
                         </View>
                     </Button>
-                    <Button onPress={() => { this.setState({ selectedPage: 14 }) }} style={{ backgroundColor: '#3B5998' }}>
+                    <Button onPress={() => { this.setState({ selectedPage: 14 }) }} style={{ backgroundColor: themcolor.fabBtnClr }}>
                         <Icon name="settings" />
                     </Button>
-                    <Button onPress={() => { this.setState({ selectedPage: 13 }) }} style={{ backgroundColor: '#34A34F' }}>
+                    <Button onPress={() => { this.setState({ selectedPage: 13 }) }} style={{ backgroundColor: themcolor.fabBtnClr }}>
                         <Icon name="add" />
                     </Button>
                 </Fab>
@@ -154,19 +263,19 @@ class primary extends React.Component {
 
 
     logOut = () => {
-        this.props.Stater({ logedin: false, page: -1 });
+        this.props.Stater({ logedin: false, page: -1, });
         this.storLogout();
     }
 
     storLogout = async () => {
 
-        database.setData({ status: 'logedOut', passwordhash: 'passwordhash', username: 'username' }).then(
+        database.setData({ status: 'logedOut', passwordhash: 'passwordhash', username: 'username',theme:'sunny' }).then(
             (resp) => { console.log(resp); }).catch(
-            (err) => { console.log(err); }
-        );
+                (err) => { console.log(err); }
+            );
     };
 
-    pageChanger = async(val) => {
+    pageChanger = async (val) => {
         await this.setState({ selectedPage: val });
         await this.props.storeState('Primary', this.state);
     }
@@ -240,7 +349,7 @@ const style = StyleSheet.create({
     },
     namelogo: {
         fontSize: 28,
-        marginLeft: 55,
+        color: 'black',
     },
     back_arrow: {
         width: 50,
@@ -250,10 +359,14 @@ const style = StyleSheet.create({
     footer: {
         alignItems: 'flex-start',
         flexDirection: "row",
+        elevation: 3,
+        shadowOffset: { height: -5, }, shadowOpacity: 0.2,
+        borderColor: 'gray',
+        borderTopWidth: 0.5,
     },
     footer_items: {
-        width: 40,
-        height: 40,
+        width: 32,
+        height: 32,
     }
 });
 

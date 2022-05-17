@@ -20,11 +20,7 @@ class Editefile extends React.Component {
     componentDidMount() {
         let courselist = '';
         let tis = this;
-        axios.get(Server.url + 'user/course', {
-            headers: {
-                Cookie: "userName=" + tis.props.State.userName + ";" + " passwordHash=" + tis.props.State.passwordHash + ";",
-            }
-        })
+        axios.get(Server.url + 'user/course?'+ "userName=" + tis.props.State.userName + "& passwordHash=" + tis.props.State.passwordHash,)
             .then(function (response) {
                 courselist = response.data;
             })
@@ -37,11 +33,7 @@ class Editefile extends React.Component {
 
 
         let filetypeList = '';
-        axios.get(Server.url + 'user/filetype', {
-            headers: {
-                Cookie: "userName=" + tis.props.State.userName + ";" + " passwordHash=" + tis.props.State.passwordHash + ";",
-            }
-        })
+        axios.get(Server.url + 'user/filetype?'+ "userName=" + tis.props.State.userName + "& passwordHash=" + tis.props.State.passwordHash,)
             .then(function (response) {
                 filetypeList = response.data;
             })

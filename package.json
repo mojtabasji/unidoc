@@ -16,6 +16,7 @@
     "expo-av": "~9.1.2",
     "expo-document-picker": "~9.1.2",
     "expo-file-system": "~11.0.2",
+    "expo-font": "~9.1.0",
     "expo-image-picker": "~10.1.4",
     "expo-intent-launcher": "~9.0.0",
     "expo-media-library": "~12.0.2",

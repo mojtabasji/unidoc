@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "unidoc1.0.0",
-    "slug": "unidoc100",
-    "version": "1.0.0",
+    "name": "unidoc",
+    "slug": "unidoc",
+    "version": "1.0.5",
     "orientation": "portrait",
-    "icon": "./storage/images/icon.png",
+    "icon": "./storage/images/logo.png",
     "splash": {
       "image": "./storage/images/icon.png",
       "resizeMode": "contain",
@@ -19,18 +19,19 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.mojtabasji.unidoc",
-      "buildNumber": "1.0.0"
+      "buildNumber": "1.0.1"
     },
     "android": {
       "package": "com.mojtaba_sji.unidoc",
       "adaptiveIcon": {
-        "foregroundImage": "./storage/images/icon.png",
+        "foregroundImage": "./storage/images/logo.png",
         "backgroundColor": "#FFFFFF"
       },
-      "versionCode": 1
+      "versionCode": 104
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "description": "unidoct, unidoct.ir V1.0.5"
   }
 }

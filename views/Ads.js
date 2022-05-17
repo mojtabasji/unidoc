@@ -18,7 +18,11 @@ class App extends React.Component {
         if (playbackStatus.positionMillis > 5000) {
             this.setState({ btnShow: true });
             // The player has just finished playing and will stop.
-        };
+        }
+        if (playbackStatus.didJustFinish)
+        {
+            this.setState({ btnShow: true });
+        }
     }
 
     componentDidMount() {

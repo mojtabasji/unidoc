@@ -5,7 +5,7 @@ import * as mime from 'react-native-mime-types';
 import Base64 from './Base64';
 import { StorageAccessFramework } from 'expo-file-system';
  
-const dbURL = Platform.OS === 'ios' ? FileSystem.documentDirectory : FileSystem.documentDirectory + 'user.txt';
+const dbURL = Platform.OS === 'ios' ? FileSystem.documentDirectory + 'user.txt' : FileSystem.documentDirectory + 'user.txt';
 
 export const getData = () => new Promise((resolve, reject) => {
     FileSystem.readAsStringAsync(dbURL,{encoding:'utf8'}).then((val) => {

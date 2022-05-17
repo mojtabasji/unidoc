@@ -6,12 +6,27 @@ import {
   TextInput,
   Button,
   TouchableHighlight,
-  Image,ImageBackground,
+  Image, ImageBackground,
   Alert
 } from 'react-native';
 import Server from '../Server.js';
 import axios from 'axios';
 import * as database from '../database';
+import * as Font from 'expo-font';
+
+let customFonts = {
+  'GerthDemo': require('../assets/fonts/GerthDemo.ttf'),
+  'StyleScript-Regular': require('../assets/fonts/StyleScript-Regular.ttf'),
+  'Cinzel-Regular': require('../assets/fonts/Cinzel/Cinzel-Regular.ttf'),
+  'Cinzel-Bold': require('../assets/fonts/Cinzel/Cinzel-Bold.ttf'),
+  'Cinzel-Medium': require('../assets/fonts/Cinzel/Cinzel-Medium.ttf'),
+
+  'FrankRuhlLibre-Light': require('../assets/fonts/Frank_Ruhl_Libre/FrankRuhlLibre-Light.ttf'),
+  'FrankRuhlLibre-Regular': require('../assets/fonts/Frank_Ruhl_Libre/FrankRuhlLibre-Regular.ttf'),
+  
+  'LobsterTwo-Regular': require('../assets/fonts/Lobster_Two/LobsterTwo-Regular.ttf'),
+  'LobsterTwo-Italic': require('../assets/fonts/Lobster_Two/LobsterTwo-Italic.ttf'),
+};
 
 export default class LoginView extends Component {
 
@@ -20,19 +35,30 @@ export default class LoginView extends Component {
     userName: '',
     password: '',
     loding: false,
+    fontsLoaded: false,
   }
 
-  storLogin = ()=>{
-    database.setData({status:'logedIn',passwordhash:this.state.passwordHash,username:this.state.userName}).then(
-      (resp)=>{console.log(resp);}).catch(
-      (err)=>{console.log(err);}
-    );
+
+  _loadFontsAsync() {
+    Font.loadAsync(customFonts);
+    this.setState({ fontsLoaded: true });
+  }
+
+  componentDidMount(){
+    this._loadFontsAsync();
+  }
+
+  storLogin = () => {
+    database.setData({ status: 'logedIn', passwordhash: this.state.passwordHash, username: this.state.userName, theme:'sunny' }).then(
+      (resp) => { console.log(resp); }).catch(
+        (err) => { console.log(err); }
+      );
   }
 
   loginbtn = () => {
     let res = '';
     let tis = this;
-    this.setState({loding:true});
+    this.setState({ loding: true });
     axios.post(Server.url + "auth", {
       userName: this.state.userName,
       password: this.state.password,
@@ -43,18 +69,18 @@ export default class LoginView extends Component {
       .then(function () {
         if (res.logedin == true) {
           tis.setState({ passwordHash: res.passwordHash });
-          tis.props.Stater({ logedin: true, page: 0, passwordHash: res.passwordHash,userName:tis.state.userName });
+          tis.props.Stater({ logedin: true, page: 0, passwordHash: res.passwordHash, userName: tis.state.userName });
           tis.storLogin();
         }
         else {
           alert('userName or password invalid.');
           tis.setState({ userName: '', password: '' });
         }
-        tis.setState({loding:false});
+        tis.setState({ loding: false });
       })
       .catch(function (err) {
         console.log(err);
-        tis.setState({loding:false});
+        tis.setState({ loding: false });
       })
   }
 
@@ -72,10 +98,10 @@ export default class LoginView extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Image style={styles.logo} source={require('../storage/images/logo.png')} />
-        <Text style={styles.namelogo}>𝓤𝓷𝓲𝓓𝓸𝓬</Text>
+        <Image style={styles.logo} source={require('../storage/images/logoroid.png')} />
+        <Text style={[styles.namelogo,{fontFamily:'GerthDemo'}]}>UniDoc</Text>
         <View style={styles.inputContainer}>
-          <Image style={styles.inputIcon} source={{ uri: 'https://cdn4.iconfinder.com/data/icons/epic-outlines/30/.svg-512.png' }} />
+          <Image style={styles.inputIcon} source={require('../storage/images/usernameField.png')} />
           <TextInput style={styles.inputs}
             placeholder="User Name"
             underlineColorAndroid='transparent'
@@ -83,7 +109,7 @@ export default class LoginView extends Component {
         </View>
 
         <View style={styles.inputContainer}>
-          <Image style={styles.inputIcon} source={{ uri: 'https://cdn4.iconfinder.com/data/icons/basic-user-interface-elements/700/key-lock-unlock-clef-128.png' }} />
+          <Image style={styles.inputIcon} source={require('../storage/images/password.png')} />
           <TextInput style={styles.inputs}
             placeholder="Password"
             secureTextEntry={true}
@@ -95,7 +121,7 @@ export default class LoginView extends Component {
           <Text style={styles.loginText}>Login</Text>
         </TouchableHighlight>
 
-        <TouchableHighlight style={styles.buttonContainer} onPress={() => this.onClickListener('restore_password')}>
+        <TouchableHighlight style={styles.buttonContainer} onPress={() => { alert('متاسفانه این بخش هنوز تکمیل نشده است. برای رفع مشکل با ادمین در میان بگذارید.\ninstagram: @mojtaba_sji'); }}>
           <Text>Forgot your password?</Text>
         </TouchableHighlight>
 

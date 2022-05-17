@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Image, TextInput, ActivityIndicator, AsyncStorage } from 'react-native';
-import { Button, Text, Left, Right, Picker, Icon } from 'native-base';
+import { Button, Text, Left, Right, Picker, Icon, } from 'native-base';
 import Server from '../Server';
 import axios from 'axios';
 import * as DocumentPicker from 'expo-document-picker';
@@ -225,6 +225,7 @@ class Editprofile extends React.Component {
                         tis.storLogin();
                         tis.setState({ sending: false });
                         tis.props.pageChanger(1);
+                        tis.props.HomeStater({profileEdited:true});
                     }
                 }).catch((val) => { console.log(val) });
 
@@ -261,9 +262,15 @@ class Editprofile extends React.Component {
                     }
                 })
                 .then((res) => {
+                    console.log(res.data);
                     tis.props.HomeStater({ 'data.pic': res.data.url });
                     tis.render();
                     tis.setState({ sending: false });
+                    tis.props.pageChanger(1);
+					tis.props.HomeStater({profileEdited:true});
+                })
+                .catch((err)=>{
+                    console.log(err);
                 });
         }
     };
